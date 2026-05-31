@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>揺籃の陽 ― TRPGシナリオ骨格生成議事録</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0705;
+    --bg2:#120c08;
+    --ink:#f0e6cc;
+    --gold:#c8a84b;
+    --blood:#8b1a1a;
+    --lore:#c8a84b;
+    --world:#7ab8d4;
+    --game:#b87a4a;
+    --story:#8ab87a;
+    --line:#2a2018;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(200,168,75,.06), transparent 60%),
+      radial-gradient(900px 500px at 80% 110%, rgba(139,26,26,.07), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:"IM Fell English", Georgia, "Times New Roman", serif;
+    font-size:18px;
+    line-height:1.85;
+    letter-spacing:.01em;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:48px 22px 120px;}
+
+  /* ---- Header ---- */
+  header.hero{
+    text-align:center;
+    padding:40px 0 30px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:36px;
+  }
+  .kicker{
+    font-family:"Cinzel",serif;
+    letter-spacing:.42em;
+    font-size:12px;
+    color:var(--blood);
+    text-transform:uppercase;
+    margin:0 0 18px;
+    opacity:.9;
+  }
+  h1.title{
+    font-family:"Cinzel",serif;
+    font-weight:700;
+    font-size:clamp(30px,7vw,58px);
+    margin:0;
+    color:var(--gold);
+    text-shadow:0 0 26px rgba(200,168,75,.18);
+    line-height:1.15;
+  }
+  h1.title small{
+    display:block;
+    font-family:"IM Fell English",serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:clamp(15px,3.4vw,22px);
+    color:var(--ink);
+    opacity:.72;
+    letter-spacing:.05em;
+    margin-top:14px;
+  }
+  .hero p.sub{
+    max-width:640px;margin:24px auto 0;opacity:.78;font-style:italic;font-size:16px;
+  }
+
+  /* ---- Section titles ---- */
+  h2.sec{
+    font-family:"Cinzel",serif;
+    font-weight:700;
+    color:var(--gold);
+    font-size:clamp(20px,4.5vw,30px);
+    text-align:center;
+    margin:60px 0 8px;
+  }
+  .sec-rule{
+    width:120px;height:1px;margin:0 auto 36px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    opacity:.6;
+  }
+
+  /* ---- Cast / legend ---- */
+  .cast{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:10px;
+  }
+  .cast .who{
+    border:1px solid var(--line);
+    border-left-width:4px;
+    border-radius:8px;
+    padding:14px 16px;
+    background:linear-gradient(180deg, rgba(255,255,255,.015), transparent);
+  }
+  .cast .who h3{
+    font-family:"Cinzel",serif;margin:0 0 6px;font-size:15px;letter-spacing:.08em;
+  }
+  .cast .who p{margin:4px 0;font-size:14.5px;opacity:.85;}
+  .cast .who .tag{font-style:italic;opacity:.7;font-size:13.5px;}
+  .c-lore{border-left-color:var(--lore);} .c-lore h3{color:var(--lore);}
+  .c-world{border-left-color:var(--world);} .c-world h3{color:var(--world);}
+  .c-game{border-left-color:var(--game);} .c-game h3{color:var(--game);}
+  .c-story{border-left-color:var(--story);} .c-story h3{color:var(--story);}
+
+  /* ---- Debate timeline ---- */
+  .timeline{position:relative;margin-top:30px;}
+  .timeline:before{
+    content:"";position:absolute;left:18px;top:8px;bottom:8px;width:2px;
+    background:linear-gradient(180deg,transparent,var(--line) 8%,var(--line) 92%,transparent);
+  }
+  .turn{position:relative;padding-left:52px;margin-bottom:30px;}
+  .turn .node{
+    position:absolute;left:7px;top:6px;width:24px;height:24px;border-radius:50%;
+    background:var(--bg2);border:2px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Cinzel",serif;font-size:12px;font-weight:700;color:var(--gold);
+    z-index:2;
+  }
+  .bubble{
+    border:1px solid var(--line);
+    border-left-width:5px;
+    border-radius:10px;
+    background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.18));
+    padding:16px 18px 18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .bubble .head{
+    display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;
+    border-bottom:1px dashed var(--line);padding-bottom:9px;
+  }
+  .bubble .role{font-family:"Cinzel",serif;font-weight:700;font-size:15px;letter-spacing:.1em;}
+  .bubble .role .ja{font-family:"IM Fell English",serif;font-weight:400;font-size:13px;opacity:.7;margin-left:6px;font-style:italic;}
+  .bubble .phase{margin-left:auto;font-size:12.5px;opacity:.6;font-style:italic;}
+
+  .part{margin:12px 0 0;}
+  .part .label{
+    display:inline-block;font-family:"Cinzel",serif;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:7px;
+  }
+  .part.rebut .label{color:var(--blood);border:1px solid rgba(139,26,26,.6);background:rgba(139,26,26,.08);}
+  .part.prop .label{color:var(--gold);border:1px solid rgba(200,168,75,.45);background:rgba(200,168,75,.06);}
+  .part.rebut{
+    border-left:2px solid rgba(139,26,26,.45);
+    padding-left:13px;margin-left:1px;
+  }
+  .part.prop{
+    border-left:2px solid rgba(200,168,75,.35);
+    padding-left:13px;margin-left:1px;
+  }
+  .part p{margin:.4em 0;}
+  .part p:first-of-type{margin-top:.1em;}
+  .reject{
+    display:inline-block;font-family:"Cinzel",serif;font-size:10.5px;letter-spacing:.15em;
+    color:#fff;background:var(--blood);padding:2px 8px;border-radius:4px;margin-left:4px;
+    vertical-align:middle;
+  }
+
+  /* role coloring on bubbles */
+  .r-lore .bubble{border-left-color:var(--lore);}
+  .r-lore .role{color:var(--lore);} .r-lore .node{border-color:var(--lore);color:var(--lore);}
+  .r-world .bubble{border-left-color:var(--world);}
+  .r-world .role{color:var(--world);} .r-world .node{border-color:var(--world);color:var(--world);}
+  .r-game .bubble{border-left-color:var(--game);}
+  .r-game .role{color:var(--game);} .r-game .node{border-color:var(--game);color:var(--game);}
+  .r-story .bubble{border-left-color:var(--story);}
+  .r-story .role{color:var(--story);} .r-story .node{border-color:var(--story);color:var(--story);}
+
+  /* ---- Final scenario panel ---- */
+  .scenario{
+    margin-top:20px;
+    border:1px solid var(--gold);
+    border-radius:14px;
+    background:
+      radial-gradient(700px 240px at 50% 0%, rgba(200,168,75,.08), transparent 70%),
+      linear-gradient(180deg, var(--bg2), var(--bg));
+    padding:30px 26px 34px;
+    box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 24px 70px rgba(0,0,0,.5);
+  }
+  .scenario .stitle{
+    font-family:"Cinzel",serif;font-weight:700;color:var(--gold);
+    font-size:clamp(24px,5.5vw,40px);text-align:center;margin:0 0 4px;
+    text-shadow:0 0 24px rgba(200,168,75,.2);
+  }
+  .scenario .stitle small{display:block;font-style:italic;font-family:"IM Fell English",serif;font-weight:400;font-size:15px;opacity:.7;margin-top:8px;letter-spacing:.05em;}
+  .field{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);}
+  .field:first-of-type{border-top:none;}
+  .field h4{
+    font-family:"Cinzel",serif;font-size:13px;letter-spacing:.16em;color:var(--blood);
+    text-transform:uppercase;margin:0 0 8px;
+  }
+  .field h4 .num{color:var(--gold);opacity:.55;margin-right:8px;}
+  .field p{margin:.4em 0;}
+  .field ul{margin:.4em 0;padding-left:1.2em;}
+  .field li{margin:.35em 0;}
+  .place{font-style:italic;color:var(--world);}
+
+  /* spoiler toggle */
+  .spoiler-wrap{margin-top:26px;text-align:center;}
+  .spoiler-btn{
+    font-family:"Cinzel",serif;letter-spacing:.16em;font-size:13px;
+    color:var(--bg);background:var(--gold);border:none;border-radius:30px;
+    padding:13px 26px;cursor:pointer;transition:.25s;font-weight:700;
+    box-shadow:0 6px 24px rgba(200,168,75,.25);
+  }
+  .spoiler-btn:hover{background:#e0c466;transform:translateY(-1px);}
+  .spoiler-btn:active{transform:translateY(0);}
+  .endings{
+    display:none;margin-top:22px;border:1px dashed var(--blood);border-radius:12px;
+    padding:6px 20px 18px;background:rgba(139,26,26,.05);text-align:left;
+  }
+  .endings.open{display:block;animation:fade .5s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+  .ending{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);}
+  .ending:first-of-type{border-top:none;padding-top:6px;}
+  .ending h5{font-family:"Cinzel",serif;color:var(--gold);font-size:15px;margin:0 0 6px;letter-spacing:.06em;}
+  .ending .mood{font-style:italic;color:var(--story);font-size:14px;opacity:.85;}
+
+  footer{
+    text-align:center;margin-top:70px;padding-top:24px;border-top:1px solid var(--line);
+    font-size:13px;opacity:.55;font-style:italic;
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width:600px){
+    body{font-size:16.5px;line-height:1.78;}
+    .wrap{padding:30px 14px 90px;}
+    .cast{grid-template-columns:1fr;}
+    .turn{padding-left:42px;}
+    .timeline:before{left:14px;}
+    .turn .node{left:3px;width:22px;height:22px;font-size:11px;}
+    .bubble{padding:14px 14px 15px;}
+    .bubble .phase{width:100%;margin-left:0;}
+    .scenario{padding:24px 16px 26px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Cosmic-Horror Dark Fantasy &middot; Scenario Skeleton</p>
+    <h1 class="title">揺籃の陽<small>The Cradle-Sun &mdash; 四人の番人による創作議事録</small></h1>
+    <p class="sub">四つの相容れぬ価値観を持つエージェントが、剣と魔法の世界に「眠れる原初の存在」を据えるべく議論する。各々は譲らず、却下し、作り直させ、それでも一歩ずつ卓上で遊べる骨格へと近づいてゆく。</p>
+  </header>
+
+  <h2 class="sec">議論者たち</h2>
+  <div class="sec-rule"></div>
+  <div class="cast">
+    <div class="who c-lore">
+      <h3>LORE KEEPER</h3>
+      <p>神話・歴史の番人。神話と歴史の整合性を譲らない。</p>
+      <p class="tag">嫌うもの：ご都合主義、後付け、深みのない恐怖 ／「その設定は神話的に矛盾する」</p>
+    </div>
+    <div class="who c-world">
+      <h3>WORLD BUILDER</h3>
+      <p>世界設計者。物理的・社会的リアリティを譲らない。</p>
+      <p class="tag">嫌うもの：「なぜそこに人が住む?」が説明できない設定 ／「それは現実の社会として成立しない」</p>
+    </div>
+    <div class="who c-game">
+      <h3>GAME MASTER</h3>
+      <p>ゲーム設計者。プレイヤーが実際に遊べることを譲らない。</p>
+      <p class="tag">嫌うもの：緻密すぎて遊べない、一本道の展開 ／「美しいが、卓上で遊べない」</p>
+    </div>
+    <div class="who c-story">
+      <h3>STORY WEAVER</h3>
+      <p>物語の織り手。プレイヤーの感情を揺さぶることを譲らない。</p>
+      <p class="tag">嫌うもの：起伏のない展開、バランスのための感動の犠牲 ／「整合性は取れているが、心が動かない」</p>
+    </div>
+  </div>
+
+  <h2 class="sec">議事録 ― 全八ターン</h2>
+  <div class="sec-rule"></div>
+  <div class="timeline" id="timeline"></div>
+
+  <h2 class="sec">完成したシナリオ骨格</h2>
+  <div class="sec-rule"></div>
+  <div class="scenario" id="scenario"></div>
+
+  <footer>
+    この議事録および骨格は、四つの役を一人で演じ分けて生成したものである。<br>
+    外部APIへの問い合わせは一切行っていない。 ― <em>The Cradle-Sun</em>
+  </footer>
+
+</div>
+
+<script>
+/* =========================================================
+   議論データ ― 四エージェントの八ターン
+   各ターン：rebut（反論・懸念パート）→ prop（提案パート）
+   ========================================================= */
+const TURNS = [
+  /* ---- Turn 1 : LORE ---- */
+  {
+    role:"lore", name:"LORE KEEPER", ja:"神話・歴史の番人",
+    phase:"巨大な存在を提案する",
+    rebut:[
+      "（口火を切る者として、まず凡百の発想を退けておく。）巨大な存在を「世界を滅ぼしに来る悪」として置くのは、神話的に浅い。コズミック・ホラーの核は<em>悪意ではなく無関心</em>だ。人類を憎む怪物は、結局のところ人類を見ている。本当に怖いのは、こちらを一度も見ていない存在だ。",
+      "また「太古に封印された魔王」式の後付けも却下する。封印には封印者が要り、封印者を説明し出すと神話が安っぽくなる。"
+    ],
+    prop:[
+      "提案する。名は<strong>アウベル＝サー</strong>。〈揺籃の陽〉。世界そのものを<em>夢に見ることで創った</em>嬰児神だ。太陽でも神でもなく、まどろむ赤子。",
+      "起源：時より前、闇の底でひとりだけ目を覚ましてしまった光があった。それが寂しさのあまり見た夢が、この世界・大地・海・我々である。",
+      "人類との関係：我々はアウベル＝サーの<em>夢の中の登場人物</em>にすぎない。神に祈る者は、眠る者の夢に話しかけている。",
+      "なぜ眠り、なぜ壊れているか：赤子はいま<strong>悪夢</strong>を見ている。だから世界に病・戦・狂気が滲み出す。そして何者かが、はるか昔この子を<em>眠らせ続けることを選んだ</em>。目覚めれば夢＝世界は霧消するからだ。善でも悪でもない。ただ、起こしてはならない。"
+    ]
+  },
+  /* ---- Turn 2 : WORLD ---- */
+  {
+    role:"world", name:"WORLD BUILDER", ja:"世界設計者",
+    phase:"地理・社会への影響と舞台",
+    rebut:[
+      "詩としては美しい。だが<strong>それは現実の社会として成立しない</strong>。〈揺籃の陽〉を空に浮かぶ太陽として描くなら却下だ。赤子が悪夢で寝返りを打つたび昼夜や気候が壊れ、農耕文明が一季も保たない。神話に殉じて人の暮らしを無視するな。"
+    ],
+    rejected:true,
+    rebut2:[
+      "<em>LOREの「空に在る陽」案は一度作り直してもらう。</em>世界が存続している以上、その存在は<em>制御され、隠され、利用されている</em>はずだ。でなければ誰も住めない。"
+    ],
+    prop:[
+      "対案：アウベル＝サーは空にはいない。極北の<strong>巨大なクレーター盆地</strong>の底、万年氷の下で眠っている。その鼓動が放つ温もりだけが、凍てつく北の地に唯一の住める土地を作っている。空の太陽は<em>夢が見せている偽りの陽</em>だ。",
+      "ここなら『なぜそこに人が住むか』が説明できる。<span class='place'>環状都市ヴェスペル</span>――盆地の縁にしがみつくように築かれた段々の街。氷の下から昇る地熱と微光で麦が実り、人々は『陽の恵み』と呼んでその正体を知らない。都を一歩出れば即、凍死する『外輪の闇』。だから誰も逃げられない、という閉塞も生まれる。",
+      "舞台その二：<span class='place'>沈黙の螺旋階段</span>――氷の中心へ降りる、都の地下に隠された禁域。降りるほど暖かく、降りるほど人が言葉を失っていく。"
+    ]
+  },
+  /* ---- Turn 3 : GAME ---- */
+  {
+    role:"game", name:"GAME MASTER", ja:"ゲーム設計者",
+    phase:"導入・最初の謎・逃走/戦闘の判断点",
+    rebut:[
+      "舞台は申し分ない。だが今のままでは<strong>美しいが、卓上で遊べない</strong>。『起こしてはならない神』が前提だと、正解が最初から『何もするな』に決まってしまう。プレイヤーの選択が無意味になる一本道だ。",
+      "WORLDの『一歩出れば凍死』も、行動範囲を狭めすぎる。閉塞感は良いが、探索の自由を殺すと卓が窒息する。逃げ場が物理的にゼロだと、緊張ではなく諦めになる。"
+    ],
+    prop:[
+      "対案：プレイヤーを『神を起こす/封じる』の二択から解放する。彼らは神を知らないまま雇われる。<strong>導入＝依頼</strong>：環状都市ヴェスペルで近頃、<em>地熱（=鼓動）が弱まり</em>外輪の氷が街へ這い上がってきている。さらに同時期、子どもばかりが眠ったまま目覚めず、同じ夢の歌を口ずさむ。",
+      "依頼主：街の温もりを管理する技師ギルド〈炉守〉。表向きの依頼は『地熱が弱る原因の調査』。報酬は明確、動機も生活がかかっていて自然。神の話は一切出てこない。",
+      "最初の謎：眠り続ける子らが歌う旋律が、地下の螺旋階段の最深部で<em>反響として返ってくる</em>。誰かが下で同じ歌を歌っている。",
+      "逃げるか戦うかの判断点：螺旋を降りた先で『歌っている何か』に近づくと、装備や魔法は一切効かない代わりに、近づくほど己の幼少の記憶が鮮明に蘇る。ここで戦う(=干渉する)か、退く(=観察に徹する)かを早期に一度問う。閉所恐怖の代わりに、外輪の闇に『使い捨ての避難小屋』を点在させ、逃走は可能だが代償(物資・時間)を伴う設計にすればWORLDの閉塞も活きる。"
+    ]
+  },
+  /* ---- Turn 4 : STORY ---- */
+  {
+    role:"story", name:"STORY WEAVER", ja:"物語の織り手",
+    phase:"感情的な核・テーマ・クライマックスの輪郭",
+    rebut:[
+      "整合性は取れている。<strong>だが、心が動かない。</strong>GAMEの導入を私はこのままでは受け入れない。『地熱の調査依頼』では、プレイヤーは設備点検の業者でしかない。最後に神を見ても『へえ、原因これだったのか』で終わる。<span class='reject'>REJECT</span> 依頼に<em>個人的な賭け金</em>がない。作り直してほしい。",
+      "GAMEの判断点も、感情ではなく仕掛けで作られている。『装備が効かない』はルール上の都合だ。プレイヤーの胸を締めつける理由になっていない。"
+    ],
+    rejected:true,
+    prop:[
+      "対案――感情の核を先に決め、依頼をそこへ縛りつける。<strong>テーマ：『この世界の温もりは、誰かの見る悪夢の上澄みである』。</strong>快適さは、眠る子の苦しみと地続きだという罪。",
+      "依頼の作り直し：眠ったまま歌い続ける子の中に、<em>PCの誰かの肉親(妹・我が子・かつて救えなかった教え子)</em>を含める。依頼は『地熱の調査』ではなく、表向きそれでも、PCにとっては<strong>『あの子を起こす方法を探す』</strong>になる。生活の動機(炉守の報酬)と私的な動機(肉親)が二重化することで、最後まで手を引けなくなる。",
+      "感情の起伏の設計：序盤=温かい都の安心 → 中盤=温もりの出どころを知る嫌悪と罪悪感 → 終盤=『あの子を起こせば世界が、世界を守れば あの子が永遠に悪夢の中』という両立不能の選択。",
+      "クライマックスの輪郭：神と戦うのではない。<em>眠る赤子の枕元に立ち、子守唄を続けるか、止めるかをPC自身が選ぶ</em>。剣ではなく、声で決着する場面にしたい。"
+    ]
+  },
+  /* ---- Turn 5 : LORE ---- */
+  {
+    role:"lore", name:"LORE KEEPER", ja:"神話・歴史の番人",
+    phase:"禁忌の知識を具体化する",
+    rebut:[
+      "STORYのテーマは受け入れる。私が夢の神話を出した甲斐があった。だが一点、神話的に詰める。『子守唄を止める/続ける』を<em>PCの思いつきで選べる</em>ようにするのは浅い。それでは民間伝承で十分で、禁忌の重みが出ない。選ぶには、まず<strong>知ってはならない事を知る</strong>儀式が要る。"
+    ],
+    prop:[
+      "禁忌の知識の具体化。地下に〈炉守〉も知らぬ最古の写本<strong>『子守唄写本（ザ・ルラバイ・コーデックス）』</strong>がある。これは賛美歌集の体裁をとった、<em>赤子を眠らせ続けるための歌の楽譜</em>だ。",
+      "碑文・古文書の内容：『はじめ、独りの光が泣いた。我らが祖は、その泣き声では麦が枯れると知り、光に唄をきかせた。光はまどろみ、まどろみの中に我らの畑を、我らの王を、我らの墓を見た。ゆえに唄を絶やすな。光が目を醒ませば、夢もまた醒める』。――つまり<em>文明とは、神を寝かしつけて見させた都合のよい夢</em>であり、初代〈炉守〉は子守唄の歌い手の末裔だ。",
+      "知った者に起きること：写本の旋律を一節でも理解した者は、自分も<em>『夢の登場人物にすぎない』</em>という確信に蝕まれる。SAN/正気度の喪失は数値だけでなく、<strong>自分の過去の記憶が『本当にあったか』自信を持てなくなる</strong>という形で表す。肉親の顔が、夢の作り物だったかもしれない、と。これがSTORYの『肉親を起こす』動機に直接ひびを入れる――起こしたい相手すら、夢かもしれないのだ。"
+    ]
+  },
+  /* ---- Turn 6 : WORLD ---- */
+  {
+    role:"world", name:"WORLD BUILDER", ja:"世界設計者",
+    phase:"手がかり・罠・NPCと制約",
+    rebut:[
+      "禁忌は良い。だが<strong>それは社会として成立しない</strong>部分がある。『写本を理解した者が全員正気を失う』なら、子守唄を歌い継ぐ歌い手も全滅しているはずで、数千年も唄が続いている説明がつかない。神話が世界の継続と矛盾している。現実的な制約を課させてもらう。"
+    ],
+    prop:[
+      "制約その一：完全な写本など存在しない。本物は<em>断片化</em>している。歌い手たち〈守り人〉は、各自が旋律の<strong>一小節だけ</strong>を口伝で継ぎ、互いの節を知らされない。誰も全曲＝全真実を知らないから、誰も完全には壊れずに済んできた。輪唱で世界が回っている。だからPCが真実に届くには複数の守り人を巡る必要があり、探索に自然な構造が生まれる。",
+      "手がかりと罠（探索場所の肉付け）：<span class='place'>沈黙の螺旋階段</span>では、降りるほど気温が上がり、ある段から<em>声に出した言葉が即座に現実化しかける</em>（赤子の夢に近いため）。罠＝うかつな悲鳴や本音が、夢に拾われて怪異になる。攻略＝沈黙を保つこと。GAMEの『近づくと装備が効かない』はこれで神話的に裏打ちされる。",
+      "NPCと、彼らが知ること：<br>・<strong>老歌い手ミルザ</strong>：最後の守り人の一人。耄碌したふりをしているが、自分の一節が『唄の終わらせ方』だと知る唯一の人物。語れば壊れるので語らない。<br>・<strong>炉守の長エイドリク</strong>：地熱の低下を技術問題と信じ続けたい現実主義者。神話を聞かされても拒絶する＝合理側の声。<br>・<strong>眠れる子らの世話係ハンナ</strong>：子らの歌詞を几帳面に書き留めており、それが図らずも欠けた写本の補完になる。彼女は真実を知らぬまま、最も核心の手がかりを抱えている。"
+    ]
+  },
+  /* ---- Turn 7 : GAME ---- */
+  {
+    role:"game", name:"GAME MASTER", ja:"ゲーム設計者",
+    phase:"遭遇演出・FLEEが最善手になる瞬間",
+    rebut:[
+      "輪唱の構造は遊べる、感謝する。だがSTORYのクライマックス案――『枕元で唄を続けるか止めるかPCが選ぶ』――を、私はこの形では一度<span class='reject'>REJECT</span>する。<strong>二択を最終局面に置くと、卓は遊びではなく多数決投票で終わる。</strong>美しい場面だが、そこに至る『プレイ』がない。選択の前に、選択を<em>体で理解させる</em>遭遇が要る。作り直しを挟ませてくれ。"
+    ],
+    rejected:true,
+    prop:[
+      "巨大な存在との遭遇演出：最深部でPCが見るのは怪物ではない。<strong>眠る赤子の、ただ一つの巨大な閉じた瞼</strong>だけ。神は襲ってこない。代わりに、PCの一挙手一投足が夢に波及する。誰かが武器を抜けば、瞼の裏で外輪の氷が街へ一区画進む（=都の被害として即座にGMが描写する）。神は無関心、しかし反応する。この『攻撃が効かないどころか、こちらの行動が世界を削る』感覚で、戦闘が最善手でないと体で分からせる。",
+      "<strong>FLEEが最善手になる瞬間</strong>：探索の果て、子守唄の全節がPCの中で揃いかけた時、巨大な瞼が<em>うっすらと開きはじめる</em>。空の偽りの陽が明滅し、足元の自分の影が複数に増え、仲間の名前が思い出せなくなる――目覚めの予兆。ここでシステム上はっきり示す：『戦う』『起こす』選択肢はもう勝利に通じない。<em>退いて唄を継ぐ者に旋律を託し、自分たちは地上へ走る</em>ことだけが、世界とPC自身の存在を保つ。画面に大きく一語、<strong>FLEE</strong>。逃げることが英雄的選択になる、コズミック・ホラーの背骨だ。",
+      "STORYへ返す：最終決断は『枕元の二択』単体ではなく、この遭遇を<em>くぐり抜けた者だけ</em>が、地上に戻ってから改めて引き受ける重みにしよう。そうすれば投票ではなく、体験の結論になる。"
+    ]
+  },
+  /* ---- Turn 8 : STORY ---- */
+  {
+    role:"story", name:"STORY WEAVER", ja:"物語の織り手",
+    phase:"統合・結末候補・題名（着地）",
+    rebut:[
+      "GAMEの却下を受け入れる。悔しいが正しい。二択を体験の<em>結論</em>に変えるという指摘で、私の場面は初めて『遊べる感動』になった。逃げることを英雄性に転化するという発想は、私一人では出せなかった。",
+      "ただ最後に一つだけ譲らない：どの結末も、<strong>後味に必ず一滴の毒を残す</strong>。きれいに救われる選択肢は作らない。バランスのための『救い』は感動を殺す。"
+    ],
+    prop:[
+      "全体を統合する。LOREの夢の神話、WORLDの氷下の都と輪唱、GAMEの『FLEEの英雄性』、私の『温もりは悪夢の上澄み』。これらを一つの問いに束ねる――<em>「あなたは、誰かの悪夢の上で温まり続けられるか」</em>。",
+      "結末候補は三つ。どれもPCの最終的な振る舞い（唄を継いだか/止めかけたか/逃げ切ったか）で分岐する。詳細はネタバレ防止で伏せる。",
+      "そして題名。議論の出発点だったLOREの一語を戴く。シナリオ題は――<strong>『揺籃の陽（The Cradle-Sun）』</strong>。副題に『眠る神を、起こしてはならない』。これで着地としたい。異論があれば受ける。なければ、これが我々四人の骨格だ。"
+    ]
+  }
+];
+
+/* ---- 完成シナリオ骨格データ ---- */
+const SCENARIO = {
+  title:"揺籃の陽",
+  subtitle:"The Cradle-Sun &mdash; 眠る神を、起こしてはならない",
+  fields:[
+    { h:"世界概要", html:
+      "<p>剣と魔法の中世ファンタジー世界。ただしその全ては、闇の底でひとりまどろむ嬰児神 <strong>アウベル＝サー</strong> が見ている夢にすぎない。空の太陽は本物ではなく、夢が見せる偽りの陽。人々はそれを知らずに生き、祈り、死んでゆく。コズミック・ホラー寄りのダークファンタジー。恐怖の源は悪意ではなく、こちらを一度も見ていない無関心である。" },
+    { h:"巨大な存在", html:
+      "<p><strong>アウベル＝サー〈揺籃の陽〉</strong>。時より前、闇の中でただ独り目覚めてしまった光。寂しさに見た夢が、この世界・大地・海・人類そのものとなった。善悪の外側にある原始的存在。</p>"+
+      "<p>いま赤子は<strong>悪夢</strong>を見ており、病・戦・狂気が世界に滲み出している。はるか昔、人類の祖は『泣き声では麦が枯れる』と知り、子守唄でこの神を眠らせ続けることを選んだ。目覚めれば夢＝世界は霧消する。だから、起こしてはならない。</p>" },
+    { h:"主な舞台", html:
+      "<ul>"+
+      "<li><span class='place'>環状都市ヴェスペル</span> ― 極北のクレーター盆地の縁にしがみつく段々の都。氷の下で眠る神の鼓動（地熱）だけが、凍てつく北で唯一住める温もりを生む。一歩外は即死の『外輪の闇』。</li>"+
+      "<li><span class='place'>沈黙の螺旋階段</span> ― 都の地下に隠された、氷の中心へ降りる禁域。降りるほど暖かく、降りるほど人は言葉を失う。最深部では声に出した言葉が夢に拾われ、現実化しかける。</li>"+
+      "</ul>" },
+    { h:"導入・依頼", html:
+      "<p>近頃、ヴェスペルの地熱（=神の鼓動）が弱まり、外輪の氷が街へ這い上がっている。同時に、子どもたちが眠ったまま目覚めず、皆が同じ夢の歌を口ずさむ。</p>"+
+      "<p>技師ギルド〈炉守〉が表向き『地熱低下の原因調査』としてPCを雇う（報酬・生活の動機）。だが眠れる子らの中には<strong>PCの誰かの肉親</strong>が含まれており、彼らにとって真の依頼は『あの子を起こす方法を探す』ことになる(私的な動機)。最初の謎：眠る子らの旋律が、螺旋階段の最深部から反響として返ってくる。誰かが下で同じ歌を歌っている。</p>"+
+      "<p><strong>早期の判断点：</strong>螺旋を降り『歌う何か』に近づくと装備も魔法も効かず、代わりに幼少の記憶が鮮明に蘇る。ここで干渉する（戦う）か、観察に徹する（退く）かを一度問う。外輪には代償付きの避難小屋が点在し、逃走は可能だが物資と時間を失う。</p>" },
+    { h:"禁忌の真実", html:
+      "<p>地下に眠る最古の写本 <strong>『子守唄写本（The Lullaby Codex）』</strong>。賛美歌集を装った、神を眠らせ続けるための楽譜である。文明とは、神を寝かしつけて見させた都合のよい夢にすぎない。</p>"+
+      "<p>真実は断片化して守られている。歌い手〈守り人〉は各自が旋律の<strong>一小節だけ</strong>を口伝で継ぎ、互いの節を知らない。誰も全曲＝全真実を知らないから、誰も完全には壊れずにきた。輪唱で世界が回っている。</p>"+
+      "<p>旋律を理解した者は『自分も夢の登場人物にすぎない』という確信に蝕まれ、<strong>己の過去の記憶が本当にあったか自信を持てなくなる</strong>。――起こしたい肉親すら、夢の作り物だったかもしれない。</p>" },
+    { h:"クライマックス", html:
+      "<p>最深部でPCが見るのは怪物ではなく、眠る赤子の<strong>ただ一つの巨大な閉じた瞼</strong>。神は襲わないが反応する。誰かが武器を抜けば瞼の裏で氷が街へ進み、都が即座に削られる。攻撃は無意味どころか世界を傷つける。</p>"+
+      "<p>子守唄の全節が揃いかけた時、瞼が<em>うっすら開きはじめる</em>。偽りの陽が明滅し、影が増え、仲間の名が思い出せなくなる――目覚めの予兆。システムが明示する：『戦う』『起こす』はもう勝利に通じない。退いて旋律を継ぐ者に託し、地上へ走ること――画面に大きく <strong>FLEE</strong>。逃げることが、この物語で最も英雄的な選択になる。</p>" },
+    { h:"感情的テーマ", html:
+      "<p><strong>「この世界の温もりは、誰かの見る悪夢の上澄みである」。</strong>快適さは、眠る子の苦しみと地続きだという罪。</p>"+
+      "<p>感情の起伏：序盤＝温かい都の安心 → 中盤＝温もりの出どころを知る嫌悪と罪悪感 → 終盤＝『あの子を起こせば世界が、世界を守れば あの子が永遠に悪夢の中』という両立不能の選択。剣ではなく声で決着する物語。問いは一つ――<em>あなたは、誰かの悪夢の上で温まり続けられるか。</em></p>" }
+  ],
+  endings:[
+    { h:"結末候補 I ― 子守唄を継ぐ者", mood:"後味：温もりは守られる。だが、あなたは共犯者になった。",
+      html:"<p>PCは旋律を継ぎ、瞼を再び閉じさせる。都は救われ、肉親は眠ったまま夢の中で生き続ける。誰も死なない。ただしPCはこの夜から、毎朝の太陽のぬくもりを浴びるたびに、地下で歌い続ける子の声を思い出す。世界は回り続ける――誰かが永遠に悪夢を見ることを条件に。"},
+    { h:"結末候補 II ― 唄を止めた者", mood:"後味：救いと崩壊が同じ一音の中にある。",
+      html:"<p>PCは唄を止め、瞼が開く。肉親は悪夢から解き放たれ、最後にPCの名を呼んで微笑む――その瞬間、夢である世界が端から白く溶けはじめる。これは破滅か、それとも独り泣いていた光をようやく自由にした救済か。最後の描写はPCの目を通してのみ語られ、世界がどう終わったかは、誰にも確かめようがない。"},
+    { h:"結末候補 III ― 逃げ切った者", mood:"後味：何も解決していない。だから、まだ温かい。",
+      html:"<p>PCは真実を知ったまま地上へ逃げ切る。唄は別の守り人が継ぎ、都は今日も温かい。PCだけが、この温もりの正体を知ってしまった数少ない人間として生き続ける。眠る子は眠ったまま。問いは解かれず、ただPCの胸に毒の一滴として残る。次にこの街の朝陽を見るとき、あなたはもう、昨日までと同じ顔で温まることはできない。"}
+  ]
+};
+
+/* ---- レンダリング ---- */
+function buildPart(cls, label, paras){
+  if(!paras || !paras.length) return "";
+  let s = `<div class="part ${cls}"><span class="label">${label}</span>`;
+  s += paras.map(p=>`<p>${p}</p>`).join("");
+  s += `</div>`;
+  return s;
+}
+function renderTimeline(){
+  const tl = document.getElementById("timeline");
+  tl.innerHTML = TURNS.map((t,i)=>{
+    let rebut = buildPart("rebut","反論・懸念", t.rebut);
+    let rejectBlock = "";
+    if(t.rejected){
+      rejectBlock = buildPart("rebut",
+        '却下 <span class="reject">REJECT</span>',
+        t.rebut2 && t.rebut2.length ? t.rebut2 : ["（前の提案を明確に却下し、作り直しを要求する。）"]);
+    }
+    let prop = buildPart("prop","対案・提案", t.prop);
+    return `
+    <div class="turn r-${t.role}">
+      <div class="node">${i+1}</div>
+      <div class="bubble">
+        <div class="head">
+          <span class="role">${t.name}<span class="ja">${t.ja}</span></span>
+          <span class="phase">Turn ${i+1} ・ ${t.phase}</span>
+        </div>
+        ${rebut}
+        ${rejectBlock}
+        ${prop}
+      </div>
+    </div>`;
+  }).join("");
+}
+function renderScenario(){
+  const el = document.getElementById("scenario");
+  const fields = SCENARIO.fields.map((f,i)=>
+    `<div class="field"><h4><span class="num">${String(i+1).padStart(2,"0")}</span>${f.h}</h4>${f.html}</div>`
+  ).join("");
+  const endings = SCENARIO.endings.map(e=>
+    `<div class="ending"><h5>${e.h}</h5><p class="mood">${e.mood}</p>${e.html}</div>`
+  ).join("");
+  el.innerHTML = `
+    <div class="stitle">${SCENARIO.title}<small>${SCENARIO.subtitle}</small></div>
+    ${fields}
+    <div class="field"><h4><span class="num">${String(SCENARIO.fields.length+1).padStart(2,"0")}</span>結末候補</h4>
+      <div class="spoiler-wrap">
+        <button class="spoiler-btn" id="spoilerBtn" aria-expanded="false">⚠ 結末を表示する（ネタバレ注意）</button>
+        <div class="endings" id="endings">${endings}</div>
+      </div>
+    </div>`;
+  const btn = document.getElementById("spoilerBtn");
+  const box = document.getElementById("endings");
+  btn.addEventListener("click", ()=>{
+    const open = box.classList.toggle("open");
+    btn.setAttribute("aria-expanded", open ? "true":"false");
+    btn.textContent = open ? "結末を隠す" : "⚠ 結末を表示する（ネタバレ注意）";
+  });
+}
+renderTimeline();
+renderScenario();
+</script>
+</body>
+</html>
